@@ -77,6 +77,20 @@ def _roll(a, shift):
     idx = shift % len(a)
     return np.concatenate([a[-idx:], a[:-idx]])
 
+def _embed_seq(X,Tau,D):
+  N =len(X)
+  if D * Tau > N:
+      print("Cannot build such a matrix, because D * Tau > N")
+      exit()
+  if Tau<1:
+      print("Tau has to be at least 1")
+      exit()
+  Y= np.zeros((N - (D - 1) * Tau, D))
+
+  for i in range(0, N - (D - 1) * Tau):
+      for j in range(0, D):
+          Y[i][j] = X[i + j * Tau]
+  return Y                   
 
 def _get_length_sequences_where(x):
     """
@@ -195,26 +209,26 @@ def gskew(x):
   
                       
 @set_property("fctype", "combiner")
-def svd_entropy(epochs, param):
+def svd_entropy(epochs, param=svd_param):
     axis=0
     
     final = []
     for par in param:
 
-      def svd_entropy_1d(X, Tau, DE, W):
-          if W is None:
-              Y = _embed_seq(X, Tau, DE)
-              W = np.linalg.svd(Y, compute_uv=0)
-              W /= sum(W)  # normalize singular values
-
+      def svd_entropy_1d(X, Tau, DE):
+          Y = _embed_seq(X, Tau, DE)
+          W = np.linalg.svd(Y, compute_uv=0)
+          W /= sum(W)  # normalize singular values
           return -1 * np.sum(W * np.log(W))
+
       Tau = par["Tau"]
       DE = par["DE"]
-      W = par["W"]
-      final.append(np.apply_along_axis(svd_entropy_1d, axis, epochs, Tau, DE, W).ravel()[0])
+
+      final.append(np.apply_along_axis(svd_entropy_1d, axis, epochs, Tau, DE).ravel()[0])
 
 
-    return [("SVD_Entropy__Tau_\"{}\"__De_{}__W_\"{}\"".format(par["Tau"], par["DE"], par["W"]), final[en]) for en, par in enumerate(param)]
+    return [("Tau_\"{}\"__De_{}\"".format(par["Tau"], par["DE"]), final[en]) for en, par in enumerate(param)]
+
 
 @set_property("fctype", "combiner")
 def wozniak(magnitude, param):
