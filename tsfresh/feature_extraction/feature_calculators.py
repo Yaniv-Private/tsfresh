@@ -209,7 +209,7 @@ def gskew(x):
   
                       
 @set_property("fctype", "combiner")
-def svd_entropy(epochs, param=svd_param):
+def svd_entropy(epochs, param):
     axis=0
     
     final = []
