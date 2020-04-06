@@ -109,7 +109,7 @@ class ComprehensiveFCParameters(dict):
         name_to_param.update({
             "svd_entropy":[{"Tau": ta, "DE": de, "W": w}
                       for ta in [4] 
-                      for de in [3, 6],
+                      for de in [3, 6]]
             "wozniak":[{"consecutiveStar": n} for n in [2, 4]],
             "higuchi_fractal_dimension": [{"Kmax": 3},{"Kmax": 5}],
             "time_reversal_asymmetry_statistic": [{"lag": lag} for lag in range(1, 4)],
