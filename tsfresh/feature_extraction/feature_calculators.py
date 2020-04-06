@@ -178,7 +178,96 @@ def set_property(key, value):
         return func
     return decorate_func
 
+### New Features
 
+@set_property("fctype", "simple")
+def gskew(x):
+    interpolation="nearest"
+    median_mag = np.median(x)
+    F_3_value = np.percentile(x, 3, interpolation=interpolation)
+    F_97_value = np.percentile(x, 97, interpolation=interpolation)
+
+    skew = (np.median(x[x <= F_3_value]) +
+            np.median(x[x >= F_97_value]) - 2 * median_mag)
+
+    return skew
+   
+  
+                      
+@set_property("fctype", "combiner")
+def svd_entropy(epochs, param):
+    axis=0
+    
+    final = []
+    for par in param:
+
+      def svd_entropy_1d(X, Tau, DE, W):
+          if W is None:
+              Y = _embed_seq(X, Tau, DE)
+              W = np.linalg.svd(Y, compute_uv=0)
+              W /= sum(W)  # normalize singular values
+
+          return -1 * np.sum(W * np.log(W))
+      Tau = par["Tau"]
+      DE = par["DE"]
+      W = par["W"]
+      final.append(np.apply_along_axis(svd_entropy_1d, axis, epochs, Tau, DE, W).ravel()[0])
+
+
+    return [("SVD_Entropy__Tau_\"{}\"__De_{}__W_\"{}\"".format(par["Tau"], par["DE"], par["W"]), final[en]) for en, par in enumerate(param)]
+
+@set_property("fctype", "combiner")
+def wozniak(magnitude, param):
+
+    iters = []
+    for consecutiveStar in [stars["consecutiveStar"] for stars in param]:
+      N = len(magnitude)
+      if N < consecutiveStar:
+          return 0
+      sigma = np.std(magnitude)
+      m = np.mean(magnitude)
+      count = 0
+
+      for i in range(N - consecutiveStar + 1):
+          flag = 0
+          for j in range(consecutiveStar):
+              if(magnitude[i + j] > m + 2 * sigma or
+                  magnitude[i + j] < m - 2 * sigma):
+                  flag = 1
+              else:
+                  flag = 0
+                  break
+          if flag:
+              count = count + 1
+      iters.append(count * 1.0 / (N - consecutiveStar + 1))
+
+    return [("consecutiveStar_{}".format(config["consecutiveStar"]), iters[en] )  for en, config in enumerate(param)]
+
+
+@set_property("fctype", "combiner")
+def higuchi_fractal_dimension(epochs, param):
+    def hfd_1d(X, Kmax):
+        
+        L = []
+        x = []
+        N = len(X)
+        for k in range(1, Kmax):
+            Lk = []
+            for m in range(0, k):
+                Lmk = 0
+                for i in range(1, int(np.floor((N - m) / k))):
+                    Lmk += abs(X[m + i * k] - X[m + i * k - k])
+                Lmk = Lmk * (N - 1) / np.floor((N - m) / float(k)) / k
+                Lk.append(Lmk)
+            L.append(np.log(np.mean(Lk)))
+            x.append([np.log(float(1) / k), 1])
+
+        (p, r1, r2, s) = np.linalg.lstsq(x, L, rcond=None)
+        return p[0]
+    
+    return [("Kmax_{}".format(config["Kmax"]), np.apply_along_axis(hfd_1d, 0, epochs, config["Kmax"]).ravel()[0] ) for  config in param]
+    
+   
 @set_property("fctype", "simple")
 def variance_larger_than_standard_deviation(x):
     """
