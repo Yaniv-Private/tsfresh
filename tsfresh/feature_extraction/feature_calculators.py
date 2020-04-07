@@ -195,6 +195,7 @@ def set_property(key, value):
 ### New Features
 
 @set_property("fctype", "simple")
+@set_property("custom", True)
 def gskew(x):
     interpolation="nearest"
     median_mag = np.median(x)
@@ -209,6 +210,7 @@ def gskew(x):
   
                       
 @set_property("fctype", "combiner")
+@set_property("custom", True)
 def svd_entropy(epochs, param):
     axis=0
     
@@ -231,6 +233,7 @@ def svd_entropy(epochs, param):
 
 
 @set_property("fctype", "combiner")
+@set_property("custom", True)
 def wozniak(magnitude, param):
 
     iters = []
@@ -259,6 +262,7 @@ def wozniak(magnitude, param):
 
 
 @set_property("fctype", "combiner")
+@set_property("custom", True)
 def higuchi_fractal_dimension(epochs, param):
     def hfd_1d(X, Kmax):
         
