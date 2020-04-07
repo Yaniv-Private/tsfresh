@@ -353,9 +353,11 @@ def _do_extraction_on_chunk(chunk, df, default_fc_parameters, kind_to_fc_paramet
     sample_id, kind, data = chunk
     
     for key, value in fc_parameters:
+        list_series = []
         if key is in ["var_index"]:
-            df_feat = df[df["ID"]==sample_id][key]
-            fc_parameters["var_index"] = df_feat
+            for feat in fc_parameters[key]:
+                list_series.append(df[df["ID"]==sample_id][feat])
+            fc_parameters["var_index"] = list_series
         else:
             print("No Double Feature") 
 
