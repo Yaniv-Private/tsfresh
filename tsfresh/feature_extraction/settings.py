@@ -107,6 +107,7 @@ class ComprehensiveFCParameters(dict):
                 name_to_param[name] = None
 
         name_to_param.update({
+            "var_index":["Input Pandas Series"],
             "svd_entropy":[{"Tau": ta, "DE": de}
                       for ta in [4] 
                       for de in [3, 6]],
