@@ -159,7 +159,54 @@ class ComprehensiveFCParameters(dict):
 
         super().__init__(name_to_param)
 
+class CustomFCParameters(ComprehensiveFCParameters):
+    """
+    This class is a child class of the ComprehensiveFCParameters class
+    and has the same functionality as its base class. The only difference is,
+    that most of the feature calculators are disabled and only a small
+    subset of calculators will be calculated at all. Those are denoted by an attribute called "minimal".
 
+    Use this class for quick tests of your setup before calculating all
+    features which could take some time depending of your data set size.
+
+    You should use this object when calling the extract function, like so:
+
+    >>> from tsfresh.feature_extraction import extract_features, MinimalFCParameters
+    >>> extract_features(df, default_fc_parameters=MinimalFCParameters())
+    """
+
+    def __init__(self):
+        ComprehensiveFCParameters.__init__(self)
+
+        for fname, f in feature_calculators.__dict__.items():
+            if fname in self and (not hasattr(f, "custom") or not getattr(f, "custom")):
+                del self[fname]
+
+
+                class CustomFCParameters(ComprehensiveFCParameters):
+    """
+    This class is a child class of the ComprehensiveFCParameters class
+    and has the same functionality as its base class. The only difference is,
+    that most of the feature calculators are disabled and only a small
+    subset of calculators will be calculated at all. Those are denoted by an attribute called "minimal".
+
+    Use this class for quick tests of your setup before calculating all
+    features which could take some time depending of your data set size.
+
+    You should use this object when calling the extract function, like so:
+
+    >>> from tsfresh.feature_extraction import extract_features, MinimalFCParameters
+    >>> extract_features(df, default_fc_parameters=MinimalFCParameters())
+    """
+
+    def __init__(self):
+        ComprehensiveFCParameters.__init__(self)
+
+        for fname, f in feature_calculators.__dict__.items():
+            if fname in self and (not hasattr(f, "custom") or not getattr(f, "custom")):
+                del self[fname]
+                
+                
 class MinimalFCParameters(ComprehensiveFCParameters):
     """
     This class is a child class of the ComprehensiveFCParameters class
@@ -184,6 +231,32 @@ class MinimalFCParameters(ComprehensiveFCParameters):
                 del self[fname]
 
 
+                class MinimalFCParameters(ComprehensiveFCParameters):
+    """
+    This class is a child class of the ComprehensiveFCParameters class
+    and has the same functionality as its base class. The only difference is,
+    that most of the feature calculators are disabled and only a small
+    subset of calculators will be calculated at all. Those are denoted by an attribute called "minimal".
+
+    Use this class for quick tests of your setup before calculating all
+    features which could take some time depending of your data set size.
+
+    You should use this object when calling the extract function, like so:
+
+    >>> from tsfresh.feature_extraction import extract_features, MinimalFCParameters
+    >>> extract_features(df, default_fc_parameters=MinimalFCParameters())
+    """
+
+    def __init__(self):
+        ComprehensiveFCParameters.__init__(self)
+
+        for fname, f in feature_calculators.__dict__.items():
+            if fname in self and (not hasattr(f, "minimal") or not getattr(f, "minimal")):
+                del self[fname]
+                
+                
+                
+                
 class EfficientFCParameters(ComprehensiveFCParameters):
     """
     This class is a child class of the ComprehensiveFCParameters class
