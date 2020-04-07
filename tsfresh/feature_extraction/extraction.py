@@ -303,11 +303,11 @@ def _do_extraction(df, column_id, column_value, column_kind,
     if not isinstance(distributor, DistributorBaseClass):
         raise ValueError("the passed distributor is not an DistributorBaseClass object")
 
-    kwargs = dict(default_fc_parameters=default_fc_parameters,
+    kwargs = dict(df=df,
+                  default_fc_parameters=default_fc_parameters,
                   kind_to_fc_parameters=kind_to_fc_parameters)
 
-    result = distributor.map_reduce(_do_extraction_on_chunk, data=data_in_chunks,
-                                    chunk_size=chunk_size,
+    result = distributor.map_reduce(_do_extraction_on_chunk, data=data_in_chunks, chunk_size=chunk_size,
                                     function_kwargs=kwargs)
     distributor.close()
 
@@ -323,7 +323,7 @@ def _do_extraction(df, column_id, column_value, column_kind,
     return result
 
 
-def _do_extraction_on_chunk(chunk, default_fc_parameters, kind_to_fc_parameters):
+def _do_extraction_on_chunk(chunk, df, default_fc_parameters, kind_to_fc_parameters):
     """
     Main function of this module: use the feature calculators defined in the
     default_fc_parameters or kind_to_fc_parameters parameters and extract all
@@ -344,11 +344,20 @@ def _do_extraction_on_chunk(chunk, default_fc_parameters, kind_to_fc_parameters)
     :param kind_to_fc_parameters: A dictionary of fc_parameters for special kinds or None.
     :return: A list of calculated features.
     """
-    sample_id, kind, data = chunk
+    
     if kind_to_fc_parameters and kind in kind_to_fc_parameters:
         fc_parameters = kind_to_fc_parameters[kind]
     else:
         fc_parameters = default_fc_parameters
+        
+    sample_id, kind, data = chunk
+    
+    for key, value in fc_parameters:
+        if key is in ["var_index"]:
+            df_feat = df[df["ID"]==sample_id][key]
+            fc_parameters["var_index"] = df_feat
+        else:
+            print("No Double Feature") 
 
     def _f():
         for function_name, parameter_list in fc_parameters.items():
