@@ -194,6 +194,28 @@ def set_property(key, value):
 
 ### New Features
 
+@set_property("fctype", "combiner")
+@set_property("custom", True)
+def var_index(time,param):
+    final = []
+    keys = []
+    for key, magnitude in param.items():
+      w = 1.0 / np.power(np.subtract(time[1:], time[:-1]), 2)
+      w_mean = np.mean(w)
+
+      N = len(time)
+      sigma2 = np.var(magnitude)
+
+      S1 = sum(w * (magnitude[1:] - magnitude[:-1]) ** 2)
+      S2 = sum(w)
+
+      eta_e = (w_mean * np.power(time[N - 1] -
+                time[0], 2) * S1 / (sigma2 * S2 * N ** 2))
+      final.append(eta_e)
+      keys.append(key)
+    return {"Interact__{}".format(k): eta_e for eta_e, k in zip(final,keys) }
+
+
 @set_property("fctype", "simple")
 @set_property("custom", True)
 def gskew(x):
