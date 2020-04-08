@@ -199,7 +199,7 @@ def set_property(key, value):
 def var_index(time,param):
     final = []
     keys = []
-    for key, magnitude in param.items():
+    for key, magnitude in param[0].items():
       w = 1.0 / np.power(np.subtract(time[1:], time[:-1]), 2)
       w_mean = np.mean(w)
 
