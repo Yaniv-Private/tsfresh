@@ -214,7 +214,7 @@ def var_index(time,param):
                 time[0], 2) * S1 / (sigma2 * S2 * N ** 2))
       final.append(eta_e)
       keys.append(key)
-    return ["Interact__{}".format(k): eta_e for eta_e, k in zip(final,keys) ]
+    return [("Interact__{}".format(k), eta_e) for eta_e, k in zip(final,keys) ]
 
 
 @set_property("fctype", "simple")
