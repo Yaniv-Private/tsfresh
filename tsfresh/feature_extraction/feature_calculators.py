@@ -206,8 +206,7 @@ def var_index(time,param):
 
       N = len(time)
       sigma2 = np.var(magnitude)
-      
-      print(magnitude)
+     
       S1 = sum(w * (magnitude[1:] - magnitude[:-1]) ** 2)
       S2 = sum(w)
 
