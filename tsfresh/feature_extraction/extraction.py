@@ -358,8 +358,9 @@ def _do_extraction_on_chunk(chunk, df, default_fc_parameters, kind_to_fc_paramet
             for feat, _ in fc_parameters[key].items():
                 print(str(len(df)))
                 dict_param[feat] = df[(df["ID"]==sample_id)&(df["_variables"]==feat)]["_values"]
-                print(dict_param[feat].head())
-            fc_parameters["var_index"] = [dict_param[feat]]
+                
+            fc_parameters["var_index"] = dict_param[feat]
+            print(fc_parameters["var_index"])
         else:
             print("No Double Feature") 
 
@@ -386,6 +387,7 @@ def _do_extraction_on_chunk(chunk, df, default_fc_parameters, kind_to_fc_paramet
                 x = data.values
 
             if func.fctype == "combiner":
+                print(parameter_list)
                 result = func(x, param=parameter_list)
             else:
                 if parameter_list:
