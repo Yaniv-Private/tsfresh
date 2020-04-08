@@ -357,8 +357,8 @@ def _do_extraction_on_chunk(chunk, df, default_fc_parameters, kind_to_fc_paramet
         if key in ["var_index"]:
             for feat, _ in fc_parameters[key].items():
                 print(str(len(df)))
-                dict_param[feat] = df[(df["ID"]==sample_id)&(df["_variables"]==feat)]["_values"].values
-            fc_parameters["var_index"] = dict_param[feat]
+                dict_param[feat] = df[(df["ID"]==sample_id)&(df["_variables"]==feat)]["_values"]
+            fc_parameters["var_index"] = [dict_param[feat]]
         else:
             print("No Double Feature") 
 
